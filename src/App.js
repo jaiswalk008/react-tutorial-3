@@ -1,19 +1,34 @@
-import Products from "./components/pages/Products";
-import Welcome from "./components/pages/Welcome";
-import { Route } from "react-router-dom";
-import MainHeader from "./components/MainHeader";
+import React, {useState} from 'react';
+
+import MoviesList from './components/MoviesList';
 import './App.css';
+
 function App() {
+  const [movies , setMovies] = useState([])
+  const fetchMovieHandler = async () =>{
+    const response = await fetch('https://swapi.dev/api/films');
+    const data = await response.json();
+    
+    const transformedMovie = data.results.map(movie => {
+      return {
+        id:movie.episode_id,
+        title:movie.title,
+        openingText : movie.opening_crawl,
+        releaseDate: movie.release_date
+      }
+    })
+    setMovies(transformedMovie);
+  }
+
   return (
-    <div>
-      <MainHeader/>
-      <Route path="/welcome">
-        <Welcome/>
-      </Route>
-      <Route path="/products">
-        <Products/>
-      </Route>
-    </div>
+    <React.Fragment>
+      <section>
+        <button onClick={fetchMovieHandler}>Fetch Movies</button>
+      </section>
+      <section>
+        <MoviesList movies={movies} />
+      </section>
+    </React.Fragment>
   );
 }
 
