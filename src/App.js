@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState ,useCallback} from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
@@ -8,12 +8,12 @@ function App() {
   const [loading , setLoading] = useState(false);
   const [error , setError] = useState(null);
   const [timeoutId, setTimeoutId] = useState(null); // create a state variable for timeoutId
-  const fetchMovieHandler = async () =>{
+  const fetchMovieHandler =useCallback(async () =>{
     setLoading(true);
     // clearTimeout(timeoutId) 
     console.log('retrying')
     try {
-      const response = await fetch('https://swapi.dev/api/film');
+      const response = await fetch('https://swapi.dev/api/films');
       
       if(!response.ok){
         throw new Error('Something went wrong....Retrying')
@@ -35,17 +35,19 @@ function App() {
       setTimeoutId(id);
     }
     
-  }
+  },[]) 
   const cancelHandler = (e) =>{
     setError(null);
     setLoading(false);
     clearTimeout(timeoutId) // clear the current timeout object
   }
-
+  useEffect(() =>{
+    fetchMovieHandler();
+  },[fetchMovieHandler])
   return (
     <React.Fragment>
       <section>
-        <button onClick={fetchMovieHandler}>Fetch Movies</button>
+        <h1>Movies</h1>
       </section>
       <section>
         {loading && !error && ( movies.length>0? <MoviesList movies={movies} /> : <h1>Loading....</h1>)}
