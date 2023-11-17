@@ -15,21 +15,24 @@ function App() {
     // clearTimeout(timeoutId) 
     console.log('retrying')
     try {
-      const response = await fetch('https://swapi.dev/api/films');
+      const response = await fetch('https://react-tutorial-3-default-rtdb.firebaseio.com/movies.json');
       
       if(!response.ok){
         throw new Error('Something went wrong....Retrying')
       }  
       const data = await response.json();
-      const transformedMovie = data.results.map(movie => {
-        return {
-          id:movie.episode_id,
-          title:movie.title,
-          openingText : movie.opening_crawl,
-          releaseDate: movie.release_date
-        };
-      })
-     setMovies(transformedMovie);
+      // console.log(data);
+      const loadedMovies = [];
+      for (const key in data){
+        loadedMovies.push({
+          id:key,
+          title:data[key].title,
+          openingText:data[key].openingText,
+          releaseDate:data[key].date
+        })
+      }
+      
+     setMovies(loadedMovies);
     } catch (error) {
       setError(error.message);
       const id = setTimeout(fetchMovieHandler, 5000)
@@ -46,14 +49,32 @@ function App() {
   useEffect(() =>{
     fetchMovieHandler();
   },[fetchMovieHandler])
+
+  const changeMovieHandler = (moviesList) => {
+    setMovies(moviesList);
+  }
+  const addMovieHandler = async (movie) =>{
+    console.log(movie);
+    const response = await fetch('https://react-tutorial-3-default-rtdb.firebaseio.com/movies.json',{
+      method:"POST",
+      body:JSON.stringify(movie),
+      headers:{
+        'Content-Type':'application/json'
+      }
+    });
+    const data = await response.json();
+    console.log(data.name)
+
+  }
+
   return (
     <React.Fragment>
-      <AddMovie/>
+      <AddMovie onAddingMovie = {addMovieHandler}/>
       <section>
         <h1>Movies</h1>
       </section>
       <section>
-        {loading && !error && ( movies.length>0? <MoviesList movies={movies} /> : <h1>Loading....</h1>)}
+        {loading && !error && ( movies.length>0? <MoviesList onDelete={changeMovieHandler} movies={movies} /> : <h1>Loading....</h1>)}
         {loading && error && <p>{error} <button onClick={cancelHandler}>Cancel retrying</button></p>}
       </section>
     </React.Fragment>

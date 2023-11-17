@@ -14,7 +14,7 @@ const AddMovie = (props) =>{
             openingText :openingText,
             date:date
         }
-        console.log(movieDetails);  
+        props.onAddingMovie(movieDetails);  
     }
     return (
         <section>
