@@ -2,12 +2,14 @@ import React, {useEffect, useState ,useCallback} from 'react';
 
 import MoviesList from './components/MoviesList';
 import './App.css';
+import AddMovie from './components/AddMovie';
 
 function App() {
   const [movies , setMovies] = useState([])
   const [loading , setLoading] = useState(false);
   const [error , setError] = useState(null);
   const [timeoutId, setTimeoutId] = useState(null); // create a state variable for timeoutId
+  
   const fetchMovieHandler =useCallback(async () =>{
     setLoading(true);
     // clearTimeout(timeoutId) 
@@ -46,6 +48,7 @@ function App() {
   },[fetchMovieHandler])
   return (
     <React.Fragment>
+      <AddMovie/>
       <section>
         <h1>Movies</h1>
       </section>
